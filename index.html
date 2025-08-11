@@ -2,39 +2,21 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Q&A Tickets Zendesk</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="style.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Assistant Tickets</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Assistant Tickets</h1>
-
-    <form id="qa-form">
-      <label>Question</label>
-      <textarea id="question" placeholder="Pose ta question sur les tickets..." required></textarea>
-
-      <div class="row">
-        <div>
-          <label>Thread ID</label>
-          <input id="thread" placeholder="thread_..." required />
-        </div>
-        <div>
-          <label>Assistant ID</label>
-          <input id="assistant" placeholder="asst_..." required />
-        </div>
-      </div>
-
-      <button type="submit">Envoyer</button>
+  <main class="container">
+    <h1>Poser une question</h1>
+    <form id="ask-form">
+      <textarea id="question" placeholder="Votre question…" rows="6" required></textarea>
+      <button id="send" type="submit">Envoyer</button>
     </form>
 
-    <div id="status"></div>
-
-    <section id="answer-box" class="hidden">
-      <h2>Réponse</h2>
-      <pre id="answer"></pre>
-    </section>
-  </div>
+    <section id="status" aria-live="polite"></section>
+    <section id="answer" class="bubble"></section>
+  </main>
 </body>
 </html>
