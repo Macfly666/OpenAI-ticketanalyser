@@ -1,5 +1,5 @@
 // ======= config =======
-const N8N_WEBHOOK_URL = "<<<URL_WEBHOOK_N8N>>>"; // ex: https://n8n.example.com/webhook/ask-assistant
+const N8N_WEBHOOK_URL = "https://n8n.ubiflow.net/webhook-test/ask-enter"; // ex: https://n8n.example.com/webhook/ask-assistant
 const OPTIONAL_API_KEY = ""; // si tu protèges le webhook, sinon laisse vide
 
 // ======= dom =======
