@@ -1,61 +1,15 @@
-:root {
-  --bg: #0f172a;
-  --panel: #111827;
-  --text: #e5e7eb;
-  --muted: #94a3b8;
-  --accent: #22c55e;
-  --danger: #ef4444;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial;
-  background: linear-gradient(120deg, #0f172a, #111827);
-  color: var(--text);
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-}
-.container {
-  width: min(900px, 92vw);
-  background: rgba(17, 24, 39, 0.8);
-  border: 1px solid #1f2937;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-}
-h1, h2 { margin: 0 0 12px; }
-#qa-form { display: grid; gap: 12px; }
-label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
-textarea, input {
-  width: 100%;
-  background: #0b1220;
-  color: var(--text);
-  border: 1px solid #243042;
-  border-radius: 10px;
-  padding: 10px 12px;
-  outline: none;
-}
-textarea { min-height: 120px; resize: vertical; }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-button {
-  background: var(--accent);
-  color: #0b1220;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-#status { margin-top: 8px; color: var(--muted); }
-#answer-box.hidden { display: none; }
-#answer {
-  white-space: pre-wrap;
-  background: #0b1220;
-  border: 1px solid #243042;
-  border-radius: 10px;
-  padding: 12px;
-}
-@media (max-width: 720px) {
-  .row { grid-template-columns: 1fr; }
+:root { color-scheme: light dark; }
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:0; }
+.container { max-width: 760px; margin: 3rem auto; padding: 0 1rem; }
+h1 { font-size: 1.4rem; }
+form { display: grid; gap: .75rem; margin: 1rem 0; }
+textarea { padding: .75rem; border-radius: .5rem; border: 1px solid #ccc; resize: vertical; }
+button { padding: .7rem 1rem; border: none; border-radius: .5rem; background: #0ea5e9; color: #fff; cursor: pointer; }
+button:hover { background: #0284c7; }
+#status { margin-top: .5rem; font-size: .95rem; color: #666; }
+.bubble { white-space: pre-wrap; background: #f6f7f9; padding: 1rem; border-radius: .75rem; border: 1px solid #e5e7eb; }
+@media (prefers-color-scheme: dark){
+  textarea, .bubble { background: #111827; color: #e5e7eb; border-color: #374151; }
+  button { background: #2563eb; }
+  button:hover { background: #1d4ed8; }
 }
