@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Q&A Tickets Zendesk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <h1>Assistant Tickets</h1>
+
+    <form id="qa-form">
+      <label>Question</label>
+      <textarea id="question" placeholder="Pose ta question sur les tickets..." required></textarea>
+
+      <div class="row">
+        <div>
+          <label>Thread ID</label>
+          <input id="thread" placeholder="thread_..." required />
+        </div>
+        <div>
+          <label>Assistant ID</label>
+          <input id="assistant" placeholder="asst_..." required />
+        </div>
+      </div>
+
+      <button type="submit">Envoyer</button>
+    </form>
+
+    <div id="status"></div>
+
+    <section id="answer-box" class="hidden">
+      <h2>Réponse</h2>
+      <pre id="answer"></pre>
+    </section>
+  </div>
+
+  <script>
+    // Mets ici l'URL de ton webhook n8n (méthode POST)
+    const N8N_WEBHOOK_URL = "<<<URL_WEBHOOK_N8N>>>";
+
+    async function askAssistant(payload) {
+      const res = await fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Webhook error: " + res.status);
+      return res.json();
+    }
+
+    document.getElementById("qa-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const question = document.getElementById("question").value.trim();
+      const thread_id = document.getElementById("thread").value.trim();
+      const assistant_id = document.getElementById("assistant").value.trim();
+      const status = document.getElementById("status");
+      const box = document.getElementById("answer-box");
+      const pre = document.getElementById("answer");
+      status.textContent = "En cours...";
+      box.classList.add("hidden");
+      pre.textContent = "";
+
+      try {
+        const data = await askAssistant({ question, thread_id, assistant_id });
+        pre.textContent = data.answer || "(Aucune réponse)";
+        box.classList.remove("hidden");
+        status.textContent = "OK";
+      } catch (err) {
+        status.textContent = "Erreur: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
