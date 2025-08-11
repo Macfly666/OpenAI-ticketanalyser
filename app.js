@@ -1,5 +1,5 @@
 // CONFIG: mets l’URL publique de ton webhook n8n /ask
-const N8N_WEBHOOK_URL = "https://n8n.ubiflow.net/webhook-test/ask-enter";
+const N8N_WEBHOOK_URL = "https://n8n.ubiflow.net/webhook/ask-enter";
 
 const form = document.getElementById('ask-form');
 const questionEl = document.getElementById('question');
