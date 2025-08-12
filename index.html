@@ -2,33 +2,26 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Ask Assistant (async)</title>
+  <title>Assistant Ubiflow — Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main class="container">
-    <h1>Assistant Ubiflow</h1>
-
-    <form id="ask-form">
-      <label for="question">Votre question</label>
-      <textarea id="question" name="question" rows="5" placeholder="Posez votre question ici..."></textarea>
+  <main class="chat-shell">
+    <header class="chat-header">
+      <div class="title">Assistant Ubiflow</div>
       <div class="actions">
-        <button id="ask-btn" type="submit">Demander</button>
-        <span id="status" class="status"></span>
+        <button id="new-chat" title="Nouvelle discussion">Nouvelle discussion</button>
       </div>
+    </header>
+
+    <section id="chat" class="chat-log" aria-live="polite"></section>
+
+    <form id="composer" class="chat-composer" autocomplete="off">
+      <textarea id="input" rows="1" placeholder="Écrivez votre message… (Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne)"></textarea>
+      <button id="send" type="submit">Envoyer</button>
     </form>
-
-    <section id="result" class="result hidden">
-      <h2>Réponse</h2>
-      <article id="answer"></article>
-    </section>
-
-    <footer>
-      <small>Asynchrone via n8n & OpenAI · <span id="state-indicator"></span></small>
-    </footer>
   </main>
 
   <script src="./app.js" type="module"></script>
