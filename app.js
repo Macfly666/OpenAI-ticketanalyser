@@ -1,5 +1,5 @@
 // =================== CONFIG ===================
-const N8N_BASE = 'https://YOUR-N8N-DOMAIN/webhook'; // ← ADAPTE ICI
+const N8N_BASE = 'https://n8n.ubiflow.net/webhook'; // ← ADAPTE ICI
 const ASK_ENTER_URL  = `${N8N_BASE}/ask-enter`;
 const ASK_STATUS_URL = `${N8N_BASE}/ask-status`;
 
