@@ -10,6 +10,7 @@ const resultEl = document.getElementById('result');
 const answerEl = document.getElementById('answer');
 const stateIndicator = document.getElementById('state-indicator');
 
+
 function setBusy(busy) {
   askBtn.disabled = busy;
   statusEl.textContent = busy ? 'Traitement en cours…' : '';
