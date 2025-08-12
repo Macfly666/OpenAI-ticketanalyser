@@ -15,6 +15,7 @@ let threadId = loadThreadId();
 let messages = loadMessages();
 let busy = false;
 
+
 function loadThreadId(){ return localStorage.getItem('thread_id') || null; }
 function saveThreadId(id){ localStorage.setItem('thread_id', id); }
 function clearThread(){ localStorage.removeItem('thread_id'); threadId = null; }
