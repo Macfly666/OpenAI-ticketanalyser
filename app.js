@@ -8,6 +8,7 @@ const input  = document.getElementById('input');
 const send   = document.getElementById('send');
 const newBtn = document.getElementById('new-chat');
 
+
 let threadId = loadThreadId();
 let messages = loadMessages();
 let busy = false;
