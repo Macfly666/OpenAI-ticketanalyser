@@ -14,21 +14,34 @@
       font:600 14px/1 Inter, system-ui, sans-serif; cursor:pointer; 
       background:#111; color:#fff; box-shadow:0 2px 8px rgba(0,0,0,.12);
     }
-    .canva-toolbar button.secondary { background:#2a2f36; }
-    .canva-toolbar button.ghost { background:transparent; color:#111; border:1px solid #cfd6dd; }
 
     .canva-overlay { 
       position:fixed; bottom:20px; right:20px; z-index:9999; 
       background:#000; border-radius:14px; overflow:hidden; display:none;
       box-shadow:0 12px 32px rgba(0,0,0,.45);
     }
-    .canva-iframe { width:100%; height:100%; border:0; display:block; }
+    .canva-iframe { width:100%; height:100%; border:0; display:block; z-index:1; }
+
+    /* Bandeau de contrôles AU-DESSUS de l'iframe */
+    .canva-controls {
+      position:absolute; inset:auto 8px 8px 8px; top:8px; display:flex; gap:8px; flex-wrap:wrap;
+      background:rgba(17,17,17,.6); backdrop-filter: blur(6px);
+      padding:8px; border-radius:10px; z-index:2; pointer-events:auto;
+    }
+    .canva-controls button {
+      appearance:none; border:1px solid rgba(255,255,255,.25); border-radius:8px; 
+      background:rgba(255,255,255,.06); color:#fff; font:600 13px/1 Inter, system-ui, sans-serif;
+      padding:8px 10px; cursor:pointer;
+    }
+    .canva-controls button:hover { background:rgba(255,255,255,.14); }
+    .canva-controls .danger { border-color: rgba(255,99,99,.4); }
+
     .canva-close { position:absolute; top:6px; right:6px; 
       background:rgba(255,255,255,.85); border:0; border-radius:8px; 
-      padding:4px 8px; cursor:pointer; font-weight:600; }
+      padding:4px 8px; cursor:pointer; font-weight:600; z-index:2; }
 
     /* Optionnel: transition douce */
-    .canva-overlay, .canva-toolbar { transition: all .25s ease; }
+    .canva-overlay { transition: all .25s ease; }
 
     /* Responsive guard: si petit écran, ajuste la taille réduite */
     @media (max-width: 480px) {
@@ -53,18 +66,9 @@
     </form>
   </main>
 
-  <!-- Toolbar Canva -->
+  <!-- Toolbar Canva (état initial : 1 bouton) -->
   <div class="canva-toolbar" id="canva-toolbar">
-    <!-- Bouton par défaut -->
     <button id="btn-open" title="Afficher le guide Canva">GUIDE CANVA</button>
-
-    <!-- Boutons de taille (cachés jusqu'à l'ouverture) -->
-    <div id="size-buttons" style="display:none; gap:10px;">
-      <button class="secondary" id="btn-small" title="Vue réduite">RÉDUITE</button>
-      <button class="secondary" id="btn-quarter" title="1/4 de l'écran">1/4 ÉCRAN</button>
-      <button class="secondary" id="btn-full" title="Plein écran">PLEIN ÉCRAN</button>
-      <button class="ghost" id="btn-reset" title="Revenir à l'état de base">Revenir</button>
-    </div>
   </div>
 
   <!-- Overlay Canva flottant -->
@@ -77,6 +81,15 @@
       loading="lazy"
       referrerpolicy="strict-origin-when-cross-origin"
     ></iframe>
+
+    <!-- Contrôles AU-DESSUS de l'iframe -->
+    <div class="canva-controls" id="canva-controls" role="toolbar" aria-label="Contrôles d'affichage du guide Canva" style="display:none;">
+      <button id="ctrl-small" title="Vue réduite">RÉDUITE</button>
+      <button id="ctrl-quarter" title="1/4 de l'écran">1/4 ÉCRAN</button>
+      <button id="ctrl-full" title="Plein écran">PLEIN ÉCRAN</button>
+      <button id="ctrl-reset" class="danger" title="Revenir à l'état de base">Revenir</button>
+    </div>
+
     <button class="canva-close" id="btn-close" aria-label="Fermer">✕</button>
   </div>
 
@@ -86,12 +99,12 @@
     (function(){
       const overlay = document.getElementById('canva-overlay');
       const openBtn = document.getElementById('btn-open');
-      const sizeWrap = document.getElementById('size-buttons');
+      const controls = document.getElementById('canva-controls');
       const closeBtn = document.getElementById('btn-close');
-      const btnSmall = document.getElementById('btn-small');
-      const btnQuarter = document.getElementById('btn-quarter');
-      const btnFull = document.getElementById('btn-full');
-      const btnReset = document.getElementById('btn-reset');
+      const btnSmall = document.getElementById('ctrl-small');
+      const btnQuarter = document.getElementById('ctrl-quarter');
+      const btnFull = document.getElementById('ctrl-full');
+      const btnReset = document.getElementById('ctrl-reset');
 
       const setMode = (mode) => {
         overlay.dataset.mode = mode;
@@ -107,8 +120,9 @@
           overlay.style.width = '320px';
           overlay.style.height = '180px'; // ~16:9
         } else if (mode === 'quarter') {
-          overlay.style.width = '25vw';
-          overlay.style.height = '25vh';
+          // Plus grand qu'avant comme demandé
+          overlay.style.width = '45vw';
+          overlay.style.height = '45vh';
         } else if (mode === 'full') {
           overlay.style.top = '0';
           overlay.style.left = '0';
@@ -122,7 +136,7 @@
 
       const showControls = (show) => {
         openBtn.style.display = show ? 'none' : 'inline-block';
-        sizeWrap.style.display = show ? 'flex' : 'none';
+        controls.style.display = show ? 'flex' : 'none';
       };
 
       openBtn.addEventListener('click', () => {
@@ -135,7 +149,7 @@
       btnQuarter.addEventListener('click', () => setMode('quarter'));
       btnFull.addEventListener('click', () => setMode('full'));
 
-      // Ferme l'overlay mais laisse les contrôles visibles (si besoin)
+      // Fermer l'overlay (sans reset de la toolbar globale)
       closeBtn.addEventListener('click', () => {
         overlay.style.display = 'none';
       });
@@ -146,12 +160,12 @@
         showControls(false);
       });
 
-      // Optionnel: Échap ferme l'overlay (pas un reset complet)
+      // Échap ferme l'overlay (sans reset)
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') overlay.style.display = 'none';
       });
 
-      // (Facultatif) rendre l'overlay déplaçable
+      // Déplaçable (sauf plein écran)
       let dragging = false, startX=0, startY=0, originX=0, originY=0;
       overlay.addEventListener('pointerdown', (e) => {
         if (overlay.dataset.mode === 'full') return; // pas de drag en plein écran
