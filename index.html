@@ -6,6 +6,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
+  <style>
+    /* --- Styles du module Canva --- */
+    .canva-toolbar { display:flex; gap:10px; align-items:center; margin:16px 0; flex-wrap:wrap; }
+    .canva-toolbar button { 
+      appearance:none; border:0; border-radius:10px; padding:10px 14px; 
+      font:600 14px/1 Inter, system-ui, sans-serif; cursor:pointer; 
+      background:#111; color:#fff; box-shadow:0 2px 8px rgba(0,0,0,.12);
+    }
+    .canva-toolbar button.secondary { background:#2a2f36; }
+    .canva-toolbar button.ghost { background:transparent; color:#111; border:1px solid #cfd6dd; }
+
+    .canva-overlay { 
+      position:fixed; bottom:20px; right:20px; z-index:9999; 
+      background:#000; border-radius:14px; overflow:hidden; display:none;
+      box-shadow:0 12px 32px rgba(0,0,0,.45);
+    }
+    .canva-iframe { width:100%; height:100%; border:0; display:block; }
+    .canva-close { position:absolute; top:6px; right:6px; 
+      background:rgba(255,255,255,.85); border:0; border-radius:8px; 
+      padding:4px 8px; cursor:pointer; font-weight:600; }
+
+    /* Optionnel: transition douce */
+    .canva-overlay, .canva-toolbar { transition: all .25s ease; }
+
+    /* Responsive guard: si petit écran, ajuste la taille réduite */
+    @media (max-width: 480px) {
+      .canva-overlay[data-mode="small"] { width: 88vw !important; height: 49.5vw !important; bottom: 6vw; right: 6vw; }
+    }
+  </style>
 </head>
 <body>
   <main class="chat-shell">
@@ -24,16 +53,122 @@
     </form>
   </main>
 
-  <!-- Ajout de l'iframe Canva -->
-  <div style="position:relative;padding-top:56.25%;height:0;overflow:hidden;margin:20px 0;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.15)">
+  <!-- Toolbar Canva -->
+  <div class="canva-toolbar" id="canva-toolbar">
+    <!-- Bouton par défaut -->
+    <button id="btn-open" title="Afficher le guide Canva">GUIDE CANVA</button>
+
+    <!-- Boutons de taille (cachés jusqu'à l'ouverture) -->
+    <div id="size-buttons" style="display:none; gap:10px;">
+      <button class="secondary" id="btn-small" title="Vue réduite">RÉDUITE</button>
+      <button class="secondary" id="btn-quarter" title="1/4 de l'écran">1/4 ÉCRAN</button>
+      <button class="secondary" id="btn-full" title="Plein écran">PLEIN ÉCRAN</button>
+      <button class="ghost" id="btn-reset" title="Revenir à l'état de base">Revenir</button>
+    </div>
+  </div>
+
+  <!-- Overlay Canva flottant -->
+  <div class="canva-overlay" id="canva-overlay" data-mode="small" aria-label="Guide Canva flottant">
     <iframe
+      id="canva-iframe"
+      class="canva-iframe"
       src="https://www.canva.com/design/DAGx7TmWtA8/7NZvvs6qKpHvqM_jeXgz4g/view?embed"
-      style="position:absolute;inset:0;width:100%;height:100%;border:0;"
-      allow="fullscreen; autoplay; encrypted-media"
+      allow="autoplay; fullscreen; encrypted-media"
       loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"
     ></iframe>
+    <button class="canva-close" id="btn-close" aria-label="Fermer">✕</button>
   </div>
 
   <script src="./app.js" type="module"></script>
+  <script>
+    // --- Contrôleur du module Canva ---
+    (function(){
+      const overlay = document.getElementById('canva-overlay');
+      const openBtn = document.getElementById('btn-open');
+      const sizeWrap = document.getElementById('size-buttons');
+      const closeBtn = document.getElementById('btn-close');
+      const btnSmall = document.getElementById('btn-small');
+      const btnQuarter = document.getElementById('btn-quarter');
+      const btnFull = document.getElementById('btn-full');
+      const btnReset = document.getElementById('btn-reset');
+
+      const setMode = (mode) => {
+        overlay.dataset.mode = mode;
+        // valeurs par défaut (flottant bas-droite)
+        overlay.style.top = 'auto';
+        overlay.style.left = 'auto';
+        overlay.style.bottom = '20px';
+        overlay.style.right = '20px';
+        overlay.style.borderRadius = '14px';
+        overlay.style.pointerEvents = 'auto';
+
+        if (mode === 'small') {
+          overlay.style.width = '320px';
+          overlay.style.height = '180px'; // ~16:9
+        } else if (mode === 'quarter') {
+          overlay.style.width = '25vw';
+          overlay.style.height = '25vh';
+        } else if (mode === 'full') {
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.bottom = 'auto';
+          overlay.style.right = 'auto';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.borderRadius = '0';
+        }
+      };
+
+      const showControls = (show) => {
+        openBtn.style.display = show ? 'none' : 'inline-block';
+        sizeWrap.style.display = show ? 'flex' : 'none';
+      };
+
+      openBtn.addEventListener('click', () => {
+        overlay.style.display = 'block';
+        setMode('small');
+        showControls(true);
+      });
+
+      btnSmall.addEventListener('click', () => setMode('small'));
+      btnQuarter.addEventListener('click', () => setMode('quarter'));
+      btnFull.addEventListener('click', () => setMode('full'));
+
+      // Ferme l'overlay mais laisse les contrôles visibles (si besoin)
+      closeBtn.addEventListener('click', () => {
+        overlay.style.display = 'none';
+      });
+
+      // Revenir à l'état de base: cache l'overlay ET ré-affiche seulement "GUIDE CANVA"
+      btnReset.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        showControls(false);
+      });
+
+      // Optionnel: Échap ferme l'overlay (pas un reset complet)
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') overlay.style.display = 'none';
+      });
+
+      // (Facultatif) rendre l'overlay déplaçable
+      let dragging = false, startX=0, startY=0, originX=0, originY=0;
+      overlay.addEventListener('pointerdown', (e) => {
+        if (overlay.dataset.mode === 'full') return; // pas de drag en plein écran
+        dragging = true; overlay.setPointerCapture(e.pointerId);
+        startX = e.clientX; startY = e.clientY;
+        originX = overlay.offsetLeft; originY = overlay.offsetTop;
+      });
+      overlay.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX; const dy = e.clientY - startY;
+        overlay.style.left = (originX + dx) + 'px';
+        overlay.style.top = (originY + dy) + 'px';
+        overlay.style.right = 'auto'; overlay.style.bottom = 'auto';
+      });
+      overlay.addEventListener('pointerup', () => dragging = false);
+      overlay.addEventListener('pointercancel', () => dragging = false);
+    })();
+  </script>
 </body>
 </html>
